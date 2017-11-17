@@ -1,0 +1,14 @@
+.spyproject/
+__pycache__/
+.idea/
+.ipynb_checkpoints/
+_bulid/
+_static/
+_templates/
+conf.py
+index.rst
+Makefile
+make.bat
+build/
+dist/
+wing.egg-info/
