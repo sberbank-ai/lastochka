@@ -1,7 +1,7 @@
 # Contribution guide 
 Для контрибьютинга нужно следать следующие шаги:
 1. Скачать себе репозиторий в локальную папку:  
-    ```git clone https://sbt-gitlab.ca.sbrf.ru/Trusov-IA/wing.git```
+    ```git clone https://gitlab.com/renardeinside/wings.git```
 2. Создайте свою ветку:  
     ```git checkout -b origin/mybranch```
 3. Настройте апстрим в эту ветку:  

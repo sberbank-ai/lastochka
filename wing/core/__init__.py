@@ -1,1 +1,1 @@
-from wing.core.main import *
+from wing.core.main import WingOfEvidence, WingsOfEvidence

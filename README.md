@@ -57,4 +57,4 @@ git push
 5. PROFIT!!!
 
 # Контакты  
-Трусов Иван - Trusov.I.A@mail.ca.sbrf.ru
+Трусов Иван - IATrusov@sberbank.ru
