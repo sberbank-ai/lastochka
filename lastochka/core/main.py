@@ -359,7 +359,7 @@ class WingOfEvidence(BaseEstimator, TransformerMixin):
         f, ax = plt.subplots(1, 1)
         p1 = woe_df.plot(kind="bar", x=woe_df.index, y="good", ax=ax, sharex=True, figsize=(20, 10), edgecolor="k")
         p2 = woe_df.plot(kind="line", x=woe_df.index, y="woe", ax=ax, secondary_y=True, style="o-", lw=3, c="r", ms=10)
-        return (p1, p2)
+        return p1, p2
 
 
 class LastochkaTransformer(BaseEstimator, TransformerMixin):
