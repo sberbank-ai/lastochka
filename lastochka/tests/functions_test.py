@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-from wing.core.functions import generate_combs,make_edges,calculate_loc_woe
-from wing.core.optimizer import WingOptimizer
-from wing import WingsOfEvidence
+from lastochka.core.functions import generate_combs,make_edges,calculate_loc_woe
+from lastochka.core.optimizer import WingOptimizer
+from lastochka import WingsOfEvidence
 import logging
 
 if __name__ == "__main__":

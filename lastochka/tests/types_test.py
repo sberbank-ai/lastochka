@@ -1,5 +1,5 @@
 import pandas as pd
-from wing import WingsOfEvidence
+from lastochka import WingsOfEvidence
 
 train_df = pd.read_csv("../datasets/titanic/train.csv", sep=",")
 columns = ['Pclass', 'Name', 'Sex', 'Age', 'SibSp',

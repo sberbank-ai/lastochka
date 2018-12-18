@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,'..')
 import pandas as pd
-from wing import WingsOfEvidence
+from lastochka import WingsOfEvidence
 
 class BaseTest(unittest.TestCase):
     """

@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0,'..')
 import pandas as pd
 import datetime as dt
-from wing import WingsOfEvidence
+from lastochka import WingsOfEvidence
 from sklearn.datasets import make_classification
 if __name__ == "__main__":
     N_SAMPLES = 20000

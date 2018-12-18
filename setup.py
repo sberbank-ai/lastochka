@@ -1,4 +1,4 @@
-from setuptools import setup,find_packages
+from setuptools import setup, find_packages
 
 setup(
     name="wing",
@@ -7,7 +7,7 @@ setup(
     long_description='',
     author='Trusov Ivan',
     author_email="Trusov.I.A@mail.ca.sbrf.ru",
-    url='https://sbt-gitlab.ca.sbrf.ru/Trusov-IA/wing',
+    url=None,
     license='',
     packages=find_packages(),
     include_package_data=True,
