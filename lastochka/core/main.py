@@ -67,7 +67,7 @@ class WingOfEvidence(BaseEstimator, TransformerMixin):
             dict_skeleton = {
                 "good": None,
                 "bad": None,
-                "total": None ,
+                "total": None,
                 "woe": None,
                 "local_event_rate": None}
             return (non_miss_df, dict_skeleton)
