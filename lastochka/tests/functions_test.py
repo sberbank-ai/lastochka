@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from lastochka.core.functions import generate_combs,make_edges,calculate_loc_woe
 from lastochka.core.optimizer import WingOptimizer
-from lastochka import WingsOfEvidence
+from lastochka import LastochkaTransformer
 import logging
 
 if __name__ == "__main__":

@@ -1,3 +1,3 @@
-from lastochka.core import WingsOfEvidence, WingOfEvidence
+from lastochka.core import LastochkaTransformer, WingOfEvidence
 
 __version__ = '0.0.10'

@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0,'..')
 import pandas as pd
 import datetime as dt
-from lastochka import WingsOfEvidence
+from lastochka import LastochkaTransformer
 from sklearn.datasets import make_classification
 if __name__ == "__main__":
     N_SAMPLES = 20000
@@ -13,22 +13,22 @@ if __name__ == "__main__":
     X_df = pd.DataFrame(X,columns=["X_%i"%i for i in range(N_FEATURES)])
     colnames = X_df.columns.tolist()
     adapt_st = dt.datetime.now()
-    wing = WingsOfEvidence(n_initial=10, n_target=5,
-                            columns_to_apply="all",
-                            optimizer="adaptive",
-                            #optimizer="full-search",
-                            #mass_spec_values={"Age": {20: "ZERO"}}
-                            )
+    wing = LastochkaTransformer( n_initial=10, n_target=5,
+                                 columns_to_apply="all",
+                                 optimizer="adaptive",
+                                 #optimizer="full-search",
+                                 #mass_spec_values={"Age": {20: "ZERO"}}
+                                 )
     wing.fit(X_df, y)
     adapt_fn = dt.datetime.now()
     adapt_dt = adapt_fn - adapt_st
     fullsr_st = dt.datetime.now()
-    wing = WingsOfEvidence(n_initial=10, n_target=5,
-                            columns_to_apply=colnames,
-                            #optimizer="adaptive",
-                            optimizer="full-search",
-                            #mass_spec_values={"Age": {20: "ZERO"}}
-                            )
+    wing = LastochkaTransformer( n_initial=10, n_target=5,
+                                 columns_to_apply=colnames,
+                                 #optimizer="adaptive",
+                                 optimizer="full-search",
+                                 #mass_spec_values={"Age": {20: "ZERO"}}
+                                 )
     wing.fit(X_df, y)
     fullsr_fn = dt.datetime.now()
     fullsr_dt = fullsr_fn - fullsr_st

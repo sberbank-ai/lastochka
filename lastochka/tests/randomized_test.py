@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0,'..')
 import pandas as pd
 import datetime as dt
-from lastochka import WingsOfEvidence
+from lastochka import LastochkaTransformer
 from sklearn.datasets import make_classification
 import logging
 if __name__ == "__main__":
@@ -12,11 +12,11 @@ if __name__ == "__main__":
     X, y = make_classification(n_samples=N_SAMPLES, n_features=N_FEATURES,random_state=42)
     X_df = pd.DataFrame(X, columns=["X_%i" % i for i in range(N_FEATURES)])
     #colnames = ["X_0"]
-    wings = WingsOfEvidence(n_initial=10, n_target=5,
-                           columns_to_apply="all",
-                           optimizer="full-search",
-                           # mass_spec_values={"Age": {20: "ZERO"}}
-                           )
+    wings = LastochkaTransformer( n_initial=10, n_target=5,
+                                  columns_to_apply="all",
+                                  optimizer="full-search",
+                                  # mass_spec_values={"Age": {20: "ZERO"}}
+                                  )
     wings.fit(X_df,y)
     for feature in X_df.columns:
         loc_w = wings.fitted_wing[feature]

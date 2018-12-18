@@ -11,6 +11,8 @@ import logging
 import sys
 from .functions import calc_descriptive_from_vector,split_by_edges,gini_index,calculate_loc_woe
 from .optimizer import WingOptimizer
+
+
 class WingOfEvidence(BaseEstimator, TransformerMixin):
     """
     Этот класс реализует WoE-расчет для одной переменной
@@ -360,7 +362,7 @@ class WingOfEvidence(BaseEstimator, TransformerMixin):
         return (p1, p2)
 
 
-class WingsOfEvidence(BaseEstimator, TransformerMixin):
+class LastochkaTransformer(BaseEstimator, TransformerMixin):
     def __init__(self, columns_to_apply="all",
                  n_initial=10, n_target=5,
                  mass_spec_values={}, optimizer="full-search",only_values=True,

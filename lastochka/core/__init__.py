@@ -1,1 +1,1 @@
-from lastochka.core.main import WingOfEvidence, WingsOfEvidence
+from lastochka.core.main import WingOfEvidence, LastochkaTransformer

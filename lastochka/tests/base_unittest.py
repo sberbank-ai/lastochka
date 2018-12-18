@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,'..')
 import pandas as pd
-from lastochka import WingsOfEvidence
+from lastochka import LastochkaTransformer
 
 class BaseTest(unittest.TestCase):
     """
@@ -16,7 +16,7 @@ class BaseTest(unittest.TestCase):
         тестируем функционал фильтрации колонок
         """
         cols = list("ABCD")
-        wings = WingsOfEvidence(columns_to_apply=cols)
+        wings = LastochkaTransformer( columns_to_apply=cols )
         self.assertEqual(cols,wings.columns_to_apply)
     def testAllTypes(self):
         train_df = pd.read_csv("../datasets/titanic/train.csv", sep=",")
@@ -24,12 +24,12 @@ class BaseTest(unittest.TestCase):
        'Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked']
         X_train = train_df[columns]
         y_train = train_df["Survived"]
-        wings = WingsOfEvidence(n_initial=10,n_target=5,
-                                columns_to_apply="all",
-                                #optimizer="adaptive"
-                                optimizer="full-search",
-                                mass_spec_values={"Age":{20:"ZERO"}}
-                                )
+        wings = LastochkaTransformer( n_initial=10, n_target=5,
+                                      columns_to_apply="all",
+                                      #optimizer="adaptive"
+                                      optimizer="full-search",
+                                      mass_spec_values={"Age":{20:"ZERO"}}
+                                      )
         wings.fit(X_train,y_train)
         X_tsrf = wings.transform(X_train)
     def testTitanicC(self):
@@ -40,12 +40,12 @@ class BaseTest(unittest.TestCase):
         colnames = ["Age"]
         X_train = train_df[colnames]
         y_train = train_df["Survived"]
-        wings = WingsOfEvidence(n_initial=10,n_target=5,
-                                columns_to_apply=colnames,
-                                #optimizer="adaptive"
-                                optimizer="full-search",
-                                mass_spec_values={"Age":{20:"ZERO"}}
-                                )
+        wings = LastochkaTransformer( n_initial=10, n_target=5,
+                                      columns_to_apply=colnames,
+                                      #optimizer="adaptive"
+                                      optimizer="full-search",
+                                      mass_spec_values={"Age":{20:"ZERO"}}
+                                      )
         wings.fit(X_train,y_train)
         X_tsrf = wings.transform(X_train)
         #print(X_tsrf)
@@ -57,12 +57,12 @@ class BaseTest(unittest.TestCase):
         colnames = ["Age"]
         X_train = train_df[colnames]
         y_train = train_df["Survived"]
-        wings = WingsOfEvidence(n_initial=12,n_target=5,
-                                columns_to_apply=colnames,
-                                #optimizer="adaptive",
-                                optimizer="full-search",
-                                mass_spec_values={"Age":{0:"ZERO"}}
-                                )
+        wings = LastochkaTransformer( n_initial=12, n_target=5,
+                                      columns_to_apply=colnames,
+                                      #optimizer="adaptive",
+                                      optimizer="full-search",
+                                      mass_spec_values={"Age":{0:"ZERO"}}
+                                      )
         wings.fit(X_train,y_train)
         loc_w = wings.fitted_wing["Age"]
         result = ["%0.5f"%el for el in loc_w.transform(pd.Series([0,0,0]))["woe"].values]
@@ -77,13 +77,13 @@ class BaseTest(unittest.TestCase):
         colnames = ["Age"]
         X_train = train_df[colnames]
         y_train = train_df["Survived"]
-        wings = WingsOfEvidence(n_initial=20,n_target=5,
-                                columns_to_apply=colnames,
-                                #optimizer="adaptive",
-                                optimizer="full-search",
-                                mass_spec_values={"Age":{20:"ZERO"}},
-                                only_values=False
-                                )
+        wings = LastochkaTransformer( n_initial=20, n_target=5,
+                                      columns_to_apply=colnames,
+                                      #optimizer="adaptive",
+                                      optimizer="full-search",
+                                      mass_spec_values={"Age":{20:"ZERO"}},
+                                      only_values=False
+                                      )
         wings.fit(X_train,y_train)
         X_tsrf = wings.transform(X_train)
         test_names = ["WOE_Age","WOE_g_Age"]
@@ -93,12 +93,12 @@ class BaseTest(unittest.TestCase):
         colnames = ["Age"]
         X_train = train_df[colnames]
         y_train = train_df["Survived"]
-        wings = WingsOfEvidence(n_initial=10,n_target=5,
-                                columns_to_apply=colnames,
-                                #optimizer="adaptive",
-                                optimizer="full-search",
-                                mass_spec_values={"Age":{0:"ZERO"}}
-                                )
+        wings = LastochkaTransformer( n_initial=10, n_target=5,
+                                      columns_to_apply=colnames,
+                                      #optimizer="adaptive",
+                                      optimizer="full-search",
+                                      mass_spec_values={"Age":{0:"ZERO"}}
+                                      )
         wings.fit(X_train,y_train)
         loc_w = wings.fitted_wing["Age"]
         does_local = loc_w._check_mono(loc_w.get_wing_agg()["woe"])
