@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Тут основной код проекта.
 
-from __future__ import division
 import numpy as np
 import pandas as pd
 import pandas.core.algorithms as algos
