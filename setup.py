@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
+from lastochka import __version__
 
 setup(
-    name="wing",
-    version='0.0.8',
-    description="Weight Of Evidence transformer",
+    name="lastochka",
+    version=__version__,
+    description="Lastochka - Weight Of Evidence Transformer",
     long_description='',
     author='Trusov Ivan',
-    author_email="Trusov.I.A@mail.ca.sbrf.ru",
     url=None,
     license='',
     packages=find_packages(),
