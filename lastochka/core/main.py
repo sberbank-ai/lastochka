@@ -3,11 +3,7 @@
 
 import numpy as np
 import pandas as pd
-import pandas.core.algorithms as algos
 from sklearn.base import BaseEstimator, TransformerMixin
-import itertools as it
-import logging
-import sys
 from .functions import calc_descriptive_from_vector,split_by_edges,gini_index,calculate_loc_woe
 from .optimizer import WingOptimizer
 
@@ -440,6 +436,3 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
         gini_series = pd.Series(self.gini_dict)
         return gini_series
 
-
-if __name__ == "__main__":
-    pass
