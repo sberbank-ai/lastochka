@@ -12,6 +12,7 @@ install:
   - pip install pytest-cov codecov
 
 script:
-  - pytest --cov=./
+  - pytest --cov=./lastochka
+
 after_success:
-  - codecov
+  - bash <(curl -s https://codecov.io/bash)
