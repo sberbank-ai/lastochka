@@ -50,7 +50,9 @@ test_proba = pipe.predict_proba(D_test)
 Listed by task groups. 
 
 ## DevOps
-- Add TravisCI 
+- Add TravisCI (+)
+- Add codecov checks
+- Add codecov badge
 - Add readthedocs
 
 ## Coding
