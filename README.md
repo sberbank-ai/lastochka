@@ -1,5 +1,7 @@
 # Lastochka
 
+[![Build Status](https://travis-ci.com/renardeinside/lastochka.svg?branch=master)](https://travis-ci.com/renardeinside/lastochka)
+
 Weight of Evidence transformation, implemented in Python. 
 
 # Quickstart
