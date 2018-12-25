@@ -43,3 +43,15 @@ pipe.fit(D_train, y_train)
 
 test_proba = pipe.predict_proba(D_test)
 ```
+
+# TODO-s
+Listed by task groups. 
+
+## DevOps
+- Add TravisCI 
+- Add readthedocs
+
+## Coding
+- Add tests
+- Classes refactoring 
+- Profile & rewrite hard places in Cython
