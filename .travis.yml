@@ -4,12 +4,13 @@ python:
   - "3.6"
 
 before_install:
-  - "pip install -U pip"
+  - pip install -U pip
+  - pip install -r requirements.txt
+  - pip install -U pytest pytest-cov
 
 install:
-  - pip install -r requirements.txt
-  - python setup.py install
-  - pip install pytest-cov
+
+  - pip install .
 
 script:
   - pytest --cov lastochka
