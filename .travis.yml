@@ -15,4 +15,5 @@ script:
   - pytest --cov=./lastochka
 
 after_success:
+  - coverage combine
   - bash <(curl -s https://codecov.io/bash)
