@@ -48,12 +48,15 @@ test_proba = pipe.predict_proba(D_test)
 Listed by task groups. 
 
 ## DevOps
-- Add TravisCI (+)
+- Add TravisCI 
+- Redirect TravisCI badge
 - Add codecov checks
-- Add codecov badge
+- Redirect codecov badge
 - Add readthedocs
+- Release the module to pip
+- Add coverage restriction to 80% of coverage
 
 ## Coding
 - Add tests
 - Classes refactoring 
-- Profile & rewrite hard places in Cython
+- Profile & rewrite hard-load places in Cython
