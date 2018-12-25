@@ -53,7 +53,7 @@ Listed by task groups.
 - Add codecov checks
 - Redirect codecov badge
 - Add readthedocs
-- Release the module to pip
+- Release the module to pypi
 - Add coverage restriction to 80% of coverage
 
 ## Coding
