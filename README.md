@@ -14,7 +14,6 @@ python setup.py install
 
 2. Use module as scikit-learn transformer:
 ```python
-
 import pandas as pd
 from lastochka import LastochkaTransformer
 from sklearn.linear_model import LogisticRegression
