@@ -29,18 +29,15 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=
 
 column_names = ['X%i' % i for i in range(10)]
 
-D_train = pd.DataFrame(X_train, columns = column_names)
+D_train = pd.DataFrame(X_train, columns=column_names)
 D_test = pd.DataFrame(X_test, columns = column_names)
 
-wing = LastochkaTransformer()
+lastochka = LastochkaTransformer()
 log = LogisticRegression()
 
-pipe = Pipeline(steps=
-    [
-        ('wing', wing),
-        ('log', log)
-    ]
-)
+pipe = Pipeline(steps=[
+        ('lastochka', lastochka),
+        ('log', log)])
 
 pipe.fit(D_train, y_train)
 
