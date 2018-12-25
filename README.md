@@ -9,7 +9,8 @@ Weight of Evidence transformation, implemented in Python.
 
 1. Install the package:
 ```bash
-git clone ...
+git clone https://github.com/sberbank-ai/lastochka.git
+cd lastochka
 python setup.py install
 ```
 
