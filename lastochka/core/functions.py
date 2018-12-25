@@ -15,14 +15,14 @@ import numpy as np
 import pandas as pd
 from itertools import combinations
 
+
 def make_edges(X, cuts, unique=True):
     """
-    Создаем первичное разбиение на границы
-    Args:
-        X (numpy.ndarray): массив X
-        cuts (int): количество групп
-    Returns:
-        edges (np.array): массив границ
+    Initial edges binning
+    :param X: numpy numeric vector
+    :param cuts: amount of cuts to be binned
+    :param unique: unique flag for binning
+    :return:
     """
     needs_unique = False
     edges_space = np.linspace(0, 1, num=cuts)
