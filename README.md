@@ -1,6 +1,7 @@
 # Lastochka
 [![Build Status](https://travis-ci.org/sberbank-ai/lastochka.svg?branch=master)](https://travis-ci.org/sberbank-ai/lastochka)
 [![codecov](https://codecov.io/gh/sberbank-ai/lastochka/branch/master/graph/badge.svg)](https://codecov.io/gh/sberbank-ai/lastochka)
+[![PyPI version](https://badge.fury.io/py/lastochka.svg)](https://badge.fury.io/py/lastochka)
 
 Weight of Evidence transformation, implemented in Python. 
 
@@ -8,10 +9,7 @@ Weight of Evidence transformation, implemented in Python.
 
 1. Install the package:
 ```bash
-git clone https://github.com/sberbank-ai/lastochka.git
-cd lastochka
-pip install -r requirements.txt
-python setup.py install
+pip install lastochka
 ```
 
 2. Use module as scikit-learn transformer:
