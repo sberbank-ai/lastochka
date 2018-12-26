@@ -1,19 +1,21 @@
 language: python
-
 python:
-  - "3.6"
-
+- '3.6'
 before_install:
-  - pip install -U pip
-  - pip install -r requirements.txt
-  - pip install -U pytest pytest-cov
-
+- pip install -U pip
+- pip install -r requirements.txt
+- pip install -U pytest pytest-cov
 install:
-
-  - pip install -e .
-
+- pip install -e .
 script:
-  - pytest --cov lastochka
-
+- pytest --cov lastochka
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
+deploy:
+  provider: pypi
+  user: renardeins
+  password:
+    secure: aKJy2EdBdoHg6HYfAEhZywap1/XYzbG0ACDP9TA0lQ69sx+HN+3WFHZ/wO8lHuuIYv6SHw6J0Shp0xQu7/d5PPoH5LxJUZI5HZOOaO6Bk8BvPnSk/qxqX5NpAHVXj4Ob3PBm8eqlvKoTd7/gdf58CIQ2LECZAi80AYJ/VS0aed1/ZJ43C93AWXs1A1ZSgS78y0zhZigg2+p2fAboXimBMOXMpWDpLRNxflUPD/Ksxy1H+ZUJ6KIXTCDT8uaxHkCZyVdFE7RawaycUPwfEQqbZLPuWUNy3wwvLNIufeksKEQ2VG3busknHTSxYxCmnBKr6suILxiK5Wj4he25TuwbdQdMG0rcY0zHcE0G1I8ySe3cNRN2Euw0jpp/kLTsv58YAg+6vfjsz/MKXHC8+2SW9Wz3K8WkZ05LQzbBFcX+vdAekkoMPWG6/pA3ATdn7F5uGH4F6n1sgF9cxPE2Vo70Re+475ei5Orh6KuJ2xLNz6cP2uhCJrrmc+IkA7o+f20CHo4DHCvpANTrlDpB4x9OYN9Ve94/3OxxcuQWSjNgDo9SwJGhWn8eRrFUrGMBI2VXN+yEW7WFLbx+bViD1X2O5zLAsEeDb469TL0A34LByHdR26OhQL4Qx8CrhE7JENzHTGSbB9bY1Zvr6b88bbrVu2+3lmbCj+r0eNMrw3n83CE=
+  on:
+    tags: true
+  distributions: "sdist bdist_wheel"
