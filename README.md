@@ -1,4 +1,6 @@
 # Lastochka
+[![Build Status](https://travis-ci.org/sberbank-ai/lastochka.svg?branch=master)](https://travis-ci.org/sberbank-ai/lastochka)
+[![codecov](https://codecov.io/gh/sberbank-ai/lastochka/branch/master/graph/badge.svg)](https://codecov.io/gh/sberbank-ai/lastochka)
 
 Weight of Evidence transformation, implemented in Python. 
 
@@ -47,14 +49,14 @@ Listed by task groups.
 
 ## DevOps
 - Add TravisCI 
-- Redirect TravisCI badge
+- Add TravisCI badge
 - Add codecov checks
-- Redirect codecov badge
+- Add codecov badge
 - Add readthedocs
 - Release the module to pypi
 - Add coverage restriction to 80% of coverage
 
 ## Coding
-- Add tests
+- Add tests (improve coverage up to 80%)
 - Classes refactoring 
 - Profile & rewrite hard-load places in Cython
