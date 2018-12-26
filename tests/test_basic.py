@@ -15,8 +15,8 @@ class BaseTest(unittest.TestCase):
     Basic functionality tests
     """
 
-    def test_basic(self):
-        N_SAMPLES = 1000
+    def test_main(self):
+        N_SAMPLES = 200
 
         X, y = make_classification(n_samples=N_SAMPLES, n_features=10, n_informative=2, random_state=42)
         X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.3, random_state=42)
