@@ -37,6 +37,8 @@ class BaseTest(unittest.TestCase):
         for variable, transformer in lastochka.fitted_wing.items():
             is_mono = check_mono(transformer.cont_df_woe['woe'].values)
             self.assertTrue(is_mono, msg="Variable %s is NOT monothonized" % variable)
+            transformer.get_wing_agg(only_clear=True)
+            transformer.get_wing_agg(only_clear=False)
 
         pipe.predict_proba(D_test)
 
