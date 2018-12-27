@@ -178,8 +178,10 @@ def calc_descriptive_from_vector(bins,y,total_good,total_bad):
     woe_df["local_event_rate"] = woe_df["good"] / tg_all
     return woe_df
 
-def check_variant(bins,y,total_good,total_bad):
+
+def check_variant(bins, y, total_good, total_bad):
     """
+    Splits X vector
     Функция разбивает вектор X по edges
     Считает WoE по разбитым группам
     Проверяет является ли оно монотонным
@@ -200,88 +202,10 @@ def check_variant(bins,y,total_good,total_bad):
             Если is_mono=False, возращает None
             Если is_mono=True, возвращает значение Gini Index
     """
-    wdf = calc_descriptive_from_vector(bins,y,total_good,total_bad)
+    wdf = calc_descriptive_from_vector(bins, y, total_good, total_bad)
     if check_mono(wdf["woe"]):
-        wdf = wdf.sort_values(by="local_event_rate",ascending=False)
+        wdf = wdf.sort_values(by="local_event_rate", ascending=False)
         gini_index_value = gini_index(wdf["good"].values, wdf["bad"].values)
-        return True,gini_index_value
+        return True, gini_index_value
     else:
-        return False,None
-
-def optimize_edges(clear_df, pre_edges, optimizer):
-    """
-    Here we optimize edges to find best WoE split
-    Args:
-        clear_df (pd.DataFrame):
-            dataframe of clear values
-        pre_bins (np.array):
-            array of pre bins
-        pre_edges (np.array):
-            array of pre edges,
-        optimizer (str):
-            "full-search" - full search in all combs
-            "adaptive" - adaptive search
-    Returns:
-        optimal_edges (np.array): optimal edges split
-    Algo def goes here:
-    1. Find all combinations of edges
-    2. Generate all edges
-    """
-    # first - create pre-bins and calculate woe for this
-    X_vect = clear_df["X"].values
-    pre_bins = self._split_by_edges(X_vect, pre_edges)
-    pre_edges_dict = self._generate_edge_dict(pre_edges)
-    print("Pre edges dict:")
-    print(pre_edges_dict)
-    pre_bins_dict = pd.Series(pre_bins).apply(lambda x: pre_edges_dict[x])
-    print("Initial binning:")
-    print(pre_bins_dict.value_counts().sort_index())
-    self.pre_edges = pre_edges
-    clear_df_loc = clear_df.copy()
-    clear_df_loc["bins"] = pre_bins
-    self.pre_woe_df = self._calc_descriptive_from_df(clear_df_loc, "bins")
-    # second - check for monotonical - if pre_edges enougth - return pre_edges, else - search for optimized
-    if self._check_mono(self.pre_woe_df["woe"]):
-        print("Optimal edges found in pre-binning stage")
-        optimal_edges = pre_edges
-        if lalala:
-            print("Searching edges via adaptive search algo")
-            #######################################################
-            # Алгоритм делает следующее:
-            # 1. Генерирует перестановки первого уровня
-            # 2. Генерирует перестановки второго уровня
-            # Для перестановок второго уровня делаем отбор моно
-            # Для каждой из моно перестановок добавляем новые
-            # Повторяем из раза в раз, отбирая моно
-            #######################################################
-            f1_layer = [el for el in it.combinations(pre_edges[1:-1], 1)]
-            f1_layer_flt = [variant for variant in f1_layer if self._calc_bins_and_check_mono(clear_df_loc, variant)]
-            f2_layer = [el for el in it.combinations(pre_edges[1:-1], 2)]
-            f2_layer_flt = [variant for variant in f2_layer if self._calc_bins_and_check_mono(clear_df_loc, variant)]
-            layers_collector = [f1_layer_flt, f2_layer_flt]
-            iterator_layer = f2_layer_flt
-            for i in range(self.n_target):
-                lv = self._generate_layer_variant(clear_df_loc, iterator_layer, pre_edges)
-                iterator_layer = lv
-                layers_collector.append(lv)
-                print("Total variants at level: %i -local: %i" % (i, len(iterator_layer)))
-            layers_collector = sum(layers_collector, [])
-            final_keeper = []
-            for mono_variant in layers_collector:
-                if self._calc_bins_and_check_mono(clear_df_loc, mono_variant):
-                    mono_variant = self._add_infinity(mono_variant)
-                    mono_bins = self._split_by_edges(clear_df_loc["X"], mono_variant)
-                    clear_df_loc["bins"] = mono_bins
-                    desc_df = self._calc_descriptive_from_df(clear_df_loc, "bins")
-                    desc_df = desc_df.sort_values(by="local_event_rate", ascending=False)
-                    gini_index = self._gini_index(desc_df["good"].values, desc_df["bad"].values)
-                    final_keeper.append((mono_variant, gini_index))
-            # for el in sorted(final_keeper, key=lambda x: x[1]): print(el)
-            best_variant = sorted(final_keeper, key=lambda x: x[1])[-1]
-            optimal_edges, gini_index_best = best_variant
-            print("Got best Gini: %0.3f at variant %s" % (gini_index_best, optimal_edges))
-    return optimal_edges
-
-
-if __name__ == "__main__":
-    print("Non executable module")
+        return False, None
