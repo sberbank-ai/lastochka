@@ -58,32 +58,6 @@ def generate_combs(vector, k, k_start=1):
     collector = sum(collector, [])
     return collector
 
-def generate_layer_variant(df, layer_edges, pre_edges):
-    new_layer = _combine_vector(layer_edges, pre_edges)
-    layer_edges_flt = [variant for variant in new_layer if _calc_bins_and_check_mono(df, variant)]
-    return layer_edges_flt
-
-def combine_vector(edge_list, base_edges):
-    collec_layer = []
-    for vect in edge_list:
-        high_vect = np.max(vect)
-        vect_typ = list(vect)
-        idx_v = base_edges > high_vect
-        subselected_max = base_edges[idx_v]
-        for v in subselected_max:
-            if v != np.inf:
-                new_v = vect_typ + [v]
-                collec_layer.append(tuple(new_v))
-    return collec_layer
-
-def calc_bins_and_check_mono(df,bins):
-    layer_bins = _split_by_edges(df["X"], _add_infinity(bins))
-    df["bins"] = layer_bins
-    variant_woe_vector = _calc_descriptive_from_df(df, "bins")["woe"]
-    if _check_mono(variant_woe_vector):
-        return True
-    else:
-        return False
 
 def add_infinity(vector):
     """
@@ -97,6 +71,7 @@ def add_infinity(vector):
     """
     inf_vector = np.concatenate([[-np.inf], list(vector), [np.inf]])
     return inf_vector
+
 
 def check_mono(vector):
     """
