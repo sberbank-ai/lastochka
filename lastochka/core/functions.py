@@ -39,6 +39,7 @@ def make_edges(X, cuts, unique=True):
         edges = np.unique(edges)
     return edges
 
+
 def generate_combs(vector, k, k_start=1):
     """
     Генерирует перестановки в виде:
@@ -87,6 +88,7 @@ def check_mono(vector):
     mono_any = mono_dec | mono_inc
     return mono_any
 
+
 def split_by_edges(vector, edges):
     """
     Splits input vector by edges and returns index of each value
@@ -99,6 +101,7 @@ def split_by_edges(vector, edges):
     # bins = np.digitize(vector,edges,right=True)
     bins = np.digitize(vector, edges)
     return bins
+
 
 def calculate_loc_woe(vect, goods, bads):
     """
@@ -113,6 +116,7 @@ def calculate_loc_woe(vect, goods, bads):
     t_bad = 0.5 if t_bad == 0 else t_bad
     t_good = 0.5 if t_good == 0 else t_good
     return np.log(t_bad / t_good)
+
 
 def gini_index(events, non_events):
     """

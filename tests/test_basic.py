@@ -2,12 +2,13 @@
 # this is hack to import from pre-parent directory
 import unittest
 import pandas as pd
+import numpy as np
 from lastochka import LastochkaTransformer
+from lastochka.core.main import VectorTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
-from lastochka.core.functions import check_mono
 
 
 class BaseTest(unittest.TestCase):
@@ -15,7 +16,7 @@ class BaseTest(unittest.TestCase):
     Basic functionality tests
     """
 
-    def test_main(self):
+    def testBasic(self):
         N_SAMPLES = 200
 
         X, y = make_classification(n_samples=N_SAMPLES, n_features=10, n_informative=2, random_state=42)
@@ -25,7 +26,7 @@ class BaseTest(unittest.TestCase):
         D_train = pd.DataFrame(X_train, columns=column_names)
         D_test = pd.DataFrame(X_test, columns=column_names)
 
-        lastochka = LastochkaTransformer()
+        lastochka = LastochkaTransformer(verbose=True)
         log = LogisticRegression()
 
         pipe = Pipeline(steps=[
@@ -34,12 +35,14 @@ class BaseTest(unittest.TestCase):
 
         pipe.fit(D_train, y_train)
 
-        for variable, transformer in lastochka.fitted_wing.items():
-            is_mono = check_mono(transformer.cont_df_woe['woe'].values)
-            self.assertTrue(is_mono, msg="Variable %s is NOT monothonized" % variable)
-            transformer.get_wing_agg(only_clear=True)
+    def testNonExistentEstimator(self):
+        vt = VectorTransformer(optimizer="fake_optimizer",
+                               n_final=5, n_initial=10,
+                               specials={}, verbose=False, name="test")
 
-        pipe.predict_proba(D_test)
+        self.assertRaises(NotImplementedError, vt.fit,
+                          X=np.random.normal(size=100),
+                          y=np.random.randint(0, 2, size=100))
 
 
 if __name__ == "__main__":
