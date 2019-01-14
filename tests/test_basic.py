@@ -76,6 +76,26 @@ class BaseTest(unittest.TestCase):
         lastochka = LastochkaTransformer()
         self.assertRaises(ValueError, lastochka.fit, X=_X, y=_y)
 
+    def testVerbose(self):
+        N_SAMPLES = 100
+        X, y = make_classification(n_samples=N_SAMPLES, n_features=5, n_informative=2, random_state=42)
+        column_names = ['X%i' % i for i in range(5)]
+        X_df = pd.DataFrame(X, columns=column_names)
+
+        lastochka = LastochkaTransformer(verbose=False, n_final=3, n_initial=10)
+
+        lastochka.fit(X_df, y)
+
+    def testDuplicates(self):
+        X = np.concatenate([np.ones(200), np.random.normal(100, 1, size=50)])
+        y = np.random.randint(0, 2, size=250)
+        vt = VectorTransformer(n_initial=10, n_final=5,
+                               optimizer="full-search", name="X1", verbose=False,
+                               total_non_events=len(y) - y.sum(),
+                               total_events=y.sum(), specials={})
+        with self.assertWarns(UserWarning):
+            vt.fit(X, y)
+
 
 if __name__ == "__main__":
     unittest.main()

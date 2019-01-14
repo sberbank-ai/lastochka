@@ -1,6 +1,5 @@
 from .functions import generate_combs, calculate_overall_stats, add_infinity, check_mono, gini_index
 from sklearn.base import BaseEstimator, TransformerMixin
-from typing import Dict
 import pandas as pd
 from warnings import warn
 from tqdm import tqdm
