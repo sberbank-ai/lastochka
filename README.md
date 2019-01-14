@@ -42,21 +42,4 @@ pipe.fit(D_train, y_train)
 test_proba = pipe.predict_proba(D_test)
 ```
 
-# TODO-s
-Listed by task groups. 
 
-## DevOps
-- Add TravisCI (+)
-- Add TravisCI badge (+)
-- Add Codecov checks (+)
-- Add Codecov badge (+)
-- Add PyPi release (+)
-- Add PyPi badge (+)
-- Add RTD
-- Add coverage restriction to 80% of coverage
-
-## Coding
-- Add tree-based optimizer
-- Add tests (improve coverage up to 80%)
-- Classes refactoring 
-- Profile & rewrite hard-load places in Cython

@@ -1,38 +1,82 @@
-# -*- coding: utf-8 -*-
-# TODO: Refactor optimizers to classes
-
-from .functions import make_edges, generate_combs, check_variant, add_infinity, split_by_edges
+from .functions import generate_combs, calculate_overall_stats, add_infinity, check_mono, gini_index
 from sklearn.base import BaseEstimator, TransformerMixin
+from typing import Dict
+import pandas as pd
+from warnings import warn
+from tqdm import tqdm
+import sys
+import numpy as np
 
 
 class FullSearchOptimizer(BaseEstimator, TransformerMixin):
-    def __init__(self, n_initial: int, n_final: int):
+    def __init__(self,
+                 name: str,
+                 n_initial: int,
+                 n_final: int,
+                 total_events: int,
+                 total_non_events: int,
+                 verbose: bool):
+        self.name = name
         self.n_initial = n_initial
         self.n_final = n_final
+        self.total_events = total_events
+        self.total_non_events = total_non_events
+        self.verbose = verbose
+
         self.edges = None
         self.gini = None
+        self.bin_stats = None
+
+    def _print(self, msg: str):
+        if self.verbose:
+            print(msg)
 
     def fit(self, X, y):
-        initial_edges = make_edges(X, self.n_initial)
-        all_edge_variants = generate_combs(initial_edges[1:-1], self.n_final)
-        mono_variants = []
+        _, initial_edges = pd.qcut(X, self.n_initial, duplicates="drop", retbins=True)
 
-        for edge_variant in all_edge_variants:
+        if len(initial_edges) != self.n_initial + 1:
+            warn("Dataset contains too many duplicates, "
+                 "amount of groups on initial stage was set to: %i" % len(initial_edges))
+
+        all_edge_variants = generate_combs(initial_edges[1:-1], self.n_final, len(initial_edges)+1)
+
+        mono_variants = []
+        if self.verbose:
+            edges_iterator = tqdm(all_edge_variants, desc="Variable %s optimization" % self.name, file=sys.stdout)
+        else:
+            edges_iterator = all_edge_variants
+
+        for edge_variant in edges_iterator:
             edge_variant = add_infinity(edge_variant)
-            bins = split_by_edges(X, edge_variant)
-            is_mono, gini = check_variant(bins, y,
-                                          total_good=len(y) - sum(y),
-                                          total_bad=sum(y))
-            if is_mono:
+            X_b = np.digitize(X, edge_variant)
+            bin_stats = calculate_overall_stats(X_b, y,
+                                                total_events=self.total_events,
+                                                total_non_events=self.total_non_events)
+            if check_mono(bin_stats.woe_value):
+                bin_stats = bin_stats.sort_values(by="local_event_rate", ascending=False)
+                gini = gini_index(bin_stats.events.values, bin_stats.non_events.values)
                 mono_variants.append((edge_variant, gini))
 
-        self.edges, self.gini = sorted(mono_variants, key=lambda x: x[1])[-1]
+        if len(mono_variants) == 0:
+            warn("No monotonic bins combination found, initial split will be used")
+            self.edges = add_infinity(initial_edges[1:-1])
+            self.gini = None
+        else:
+            self.edges, self.gini = sorted(mono_variants, key=lambda x: x[1])[-1]
+            self._print("Best variant gini: %0.5f" % self.gini)
+
+        X_b = np.digitize(X, self.edges)
+        self.bin_stats = calculate_overall_stats(X_b, y,
+                                                 total_events=self.total_events,
+                                                 total_non_events=self.total_non_events)
 
         return self
 
-    def transform(self, X, y=None):
-
-        return X
+    def transform(self, X, y=None) -> np.ndarray:
+        X_b = pd.DataFrame(np.digitize(X, self.edges), columns=["bin_id"])
+        X_w = pd.merge(X_b, self.bin_stats[["woe_value"]],
+                       how="left", left_on="bin_id", right_index=True)["woe_value"].values
+        return X_w
 
 
 class CategoryOptimizer(BaseEstimator, TransformerMixin):

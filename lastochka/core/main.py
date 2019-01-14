@@ -2,18 +2,27 @@
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
+from .functions import calculate_stats
 from .optimizer import OPTIMIZERS
-from sklearn.utils import check_array, check_X_y
+from sklearn.utils import check_X_y
 from sklearn.utils.multiclass import type_of_target
 from warnings import warn
-from typing import Union, Tuple,Dict
+from typing import Union, Tuple, Dict, List
 
 
 class VectorTransformer(BaseEstimator, TransformerMixin):
     """
     Class for WoE calculation and optimization per one feature
     """
-    def __init__(self, n_initial: int, n_final: int, optimizer: str, specials: Dict, verbose: bool, name: str):
+    def __init__(self,
+                 n_initial: int,
+                 n_final: int,
+                 optimizer: str,
+                 specials: Dict,
+                 verbose: bool,
+                 name: str,
+                 total_non_events: int,
+                 total_events: int):
         """
         Initialize transformer for one feature
         :param n_initial:
@@ -28,25 +37,17 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         self.specials = specials
         self.verbose = verbose
         self.name = name
+        self.total_non_events = total_non_events
+        self.total_events = total_events
+
         self.optimizer_class = None
         self.optimizer_instance = None
+        self.missing_stats = None
+        self.specials_stats = {}
 
     def _print(self, msg: str):
         if self.verbose:
             print(msg)
-
-    def _preprocess_specials(self, X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Preprocess special values
-        :param X:
-        :param y:
-        :return:
-        """
-        non_missing_mask = np.isfinite(X)
-        X = X[non_missing_mask]
-        y = y[non_missing_mask]
-
-        return X, y
 
     def _preprocess_missing(self, X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -55,10 +56,28 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         :param y:
         :return:
         """
-        for key, special_value in self.specials.items():
-            _mask = (X == special_value)
-            X = X[~_mask]
-            y = y[~_mask]
+        missing_mask = ~np.isfinite(X)
+
+        if missing_mask.sum() > 0:
+            self.missing_stats = calculate_stats(y[missing_mask],
+                                                 total_events=self.total_events,
+                                                 total_non_events=self.total_non_events)
+        X = X[~missing_mask]
+        y = y[~missing_mask]
+
+        return X, y
+
+    def _preprocess_specials(self, X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Preprocess special values
+        :param X:
+        :param y:
+        :return:
+        """
+
+        for spec_value in self.specials:
+            _y = y[X == spec_value]
+            self.specials_stats[spec_value] = calculate_stats(_y, self.total_non_events, self.total_events)
 
         return X, y
 
@@ -69,7 +88,9 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         :param y:
         :return:
         """
-        print("Processing variable: %s" % self.name)
+
+        self._print("Processing variable: %s" % self.name)
+
         self._print("Input dataset before preprocessing : %i" % len(X))
         X, y = self._preprocess_specials(X, y)
         self._print("Input dataset after specials       : %i" % len(X))
@@ -89,7 +110,12 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
             raise NotImplementedError("Optimizer %s is not yet implemented, allowed optimizers are: %s" %
                                       (self.optimizer, ', '.join(OPTIMIZERS.keys())))
 
-        self.optimizer_instance = self.optimizer_class(self.n_initial, self.n_final).fit(X, y)
+        self.optimizer_instance = self.optimizer_class(self.name,
+                                                       self.n_initial,
+                                                       self.n_final,
+                                                       total_events=self.total_events,
+                                                       total_non_events=self.total_non_events,
+                                                       verbose=self.verbose).fit(X, y)
 
     def transform(self, X: np.ndarray, y: np.ndarray = None):
         """
@@ -107,7 +133,7 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
                  n_final: int = 5,
                  optimizer: str = "full-search",
                  verbose: bool = False,
-                 specials: Dict = None):
+                 specials: Dict[str, List] = None):
         """
         Performs the Weight Of Evidence transformation over the input X features using information from y vector.
         :param n_initial: Initial amount of quantile-based groups
@@ -119,9 +145,12 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
         self.n_final = n_final
         self.optimizer = optimizer
         self.verbose = verbose
+
         self.specials = specials if specials else {}
         self.transformers = {}
         self.feature_names = []
+        self.total_non_events = None
+        self.total_events = None
 
     def fit(self,
             X: Union[pd.DataFrame, np.ndarray],
@@ -142,6 +171,9 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
 
         X, y = self._check_inputs(X, y)
 
+        self.total_events = y.sum()
+        self.total_non_events = len(y) - self.total_events
+
         for index, vector in enumerate(np.nditer(X, flags=['external_loop'], order='F')):
             vector_specials = self.specials.get(self.feature_names[index], {})
 
@@ -150,7 +182,9 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
                                                    self.optimizer,
                                                    specials=vector_specials,
                                                    verbose=self.verbose,
-                                                   name=self.feature_names[index])
+                                                   name=self.feature_names[index],
+                                                   total_events=self.total_events,
+                                                   total_non_events=self.total_non_events)
 
             vector_transformer.fit(vector, y)
             self.transformers[self.feature_names[index]] = vector_transformer
@@ -181,7 +215,6 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
         :param y: target array
         :return: transformed data
         """
-        X = check_array(X, accept_sparse=False, force_all_finite=False, dtype=None)
 
         X_w = np.zeros(X.shape)
 
