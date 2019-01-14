@@ -206,6 +206,9 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
         X, y = check_X_y(X, y, accept_sparse=False, force_all_finite=False, dtype=None, y_numeric=True)
         return X, y
 
+    def get_transformer(self, variable) -> VectorTransformer:
+        return self.transformers[variable]
+
     def transform(self,
                   X: Union[pd.DataFrame, np.ndarray],
                   y: Union[pd.Series, np.ndarray] = None):

@@ -43,12 +43,9 @@ def gini_index(events, non_events):
     p1 = float(2 * sum(events[i] * sum(non_events[:i]) for i in range(1, len(events))))
     p2 = float(sum(events * non_events))
     p3 = float(events.sum() * non_events.sum())
-    if p3 == 0.0:
-        return 0
-    else:
-        coefficient = 1 - ((p1 + p2) / p3)
-        index = coefficient * 100
-        return index
+    coefficient = 1 - ((p1 + p2) / p3)
+    index = coefficient * 100
+    return index
 
 
 def calculate_stats(y: np.ndarray, total_non_events: int, total_events: int, adaptor: float = 0.5):

@@ -36,12 +36,21 @@ class BaseTest(unittest.TestCase):
 
         pipe.fit(D_train, y_train)
         X_w = lastochka.transform(D_train)
+        X_wt = lastochka.transform(D_test)
+
+        for variable in column_names:
+            vt = lastochka.get_transformer(variable)
+            acceptable_values = vt.optimizer_instance.bin_stats["woe_value"]
+            real_values_train = X_w[variable].unique()
+            real_values_test = X_wt[variable].unique()
+            self.assertTrue(set(acceptable_values) == set(real_values_train))
+            self.assertTrue((set(acceptable_values)) == set(real_values_test))
 
     def testNonExistentEstimator(self):
         vt = VectorTransformer(optimizer="fake_optimizer",
-                                n_final=2, n_initial=10,
-                                specials={}, verbose=False, name="test",
-                                total_non_events=1, total_events=1)
+                               n_final=2, n_initial=10,
+                               specials={}, verbose=False, name="test",
+                               total_non_events=1, total_events=1)
 
         self.assertRaises(NotImplementedError, vt.fit,
                           X=np.random.normal(size=100),
@@ -60,6 +69,12 @@ class BaseTest(unittest.TestCase):
             _y = np.concatenate([np.zeros(int(case["non_events"])), np.ones(int(case["events"]))])
             woe_value = calculate_stats(_y, case["total_non_events"], case["total_events"])[-1]
             self.assertAlmostEqual(case["expected_value"], woe_value, places=5)
+
+    def testEmpty(self):
+        _X = pd.DataFrame(columns=["X1,X2"])
+        _y = np.array([])
+        lastochka = LastochkaTransformer()
+        self.assertRaises(ValueError, lastochka.fit, X=_X, y=_y)
 
 
 if __name__ == "__main__":
