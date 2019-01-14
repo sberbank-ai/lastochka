@@ -100,7 +100,8 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         if X.dtype != np.dtype("O"):
             if np.unique(X).shape[0] <= (len(X) / self.n_initial):
                 self.optimizer_class = OPTIMIZERS.get("category")
-                warn("Too low amount of unique values - category optimizer will be used")
+                warn("Too low amount of unique values (%i in %i) - category optimizer will be used" %
+                     (np.unique(X).shape[0], len(X)))
             else:
                 self.optimizer_class = OPTIMIZERS.get(self.optimizer)
         else:

@@ -79,14 +79,41 @@ class FullSearchOptimizer(BaseEstimator, TransformerMixin):
 
 
 class CategoryOptimizer(BaseEstimator, TransformerMixin):
-    def __init__(self):
-        pass
+    def __init__(self,
+                 name: str,
+                 n_initial: int,
+                 n_final: int,
+                 total_events: int,
+                 total_non_events: int,
+                 verbose: bool):
+        self.name = name
+        self.n_initial = n_initial
+        self.n_final = n_final
+        self.total_events = total_events
+        self.total_non_events = total_non_events
+        self.verbose = verbose
+
+        self.edges = None
+        self.gini = None
+        self.bin_stats = None
+
+    def _print(self, msg: str):
+        if self.verbose:
+            print(msg)
 
     def fit(self, X, y):
+        bin_stats = calculate_overall_stats(X, y,
+                                            total_events=self.total_events,
+                                            total_non_events=self.total_non_events)
+        self.bin_stats = bin_stats
         return self
 
-    def transform(self, X, y=None):
-        return X
+    def transform(self, X, y=None) -> np.ndarray:
+        X_b = pd.DataFrame(X, columns=["bin_id"])
+        X_w = pd.merge(X_b, self.bin_stats[["woe_value"]],
+                       how="left", left_on="bin_id", right_index=True)["woe_value"]
+        X_w = X_w.fillna(self.bin_stats["woe_value"].max())
+        return X_w
 
 
 OPTIMIZERS = {

@@ -10,6 +10,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_boston
+from sklearn.metrics import roc_auc_score
 
 
 class BaseTest(unittest.TestCase):
@@ -95,6 +97,53 @@ class BaseTest(unittest.TestCase):
                                total_events=y.sum(), specials={})
         with self.assertWarns(UserWarning):
             vt.fit(X, y)
+
+    def testNonBinary(self):
+        X = np.random.normal(0, 1, size=(200, 3))
+        y = np.random.randint(0, 3, size=200)
+        lastochka = LastochkaTransformer()
+        self.assertRaises(ValueError, lastochka.fit, X=X, y=y)
+
+    def testInputList(self):
+        X = [[1, 2, 3], [4, 5, 6]]
+        y = [0, 1]
+        lastochka = LastochkaTransformer()
+        self.assertRaises(TypeError, lastochka.fit, X=X, y=y)
+
+    def testInputArray(self):
+        X = np.random.normal(0, 1, size=(200, 3))
+        y = np.random.randint(0, 2, size=200)
+        lastochka = LastochkaTransformer()
+        lastochka.fit(X, y)
+        X_w = lastochka.transform(X)
+        self.assertIsInstance(X_w, np.ndarray)
+
+    def testIncrease(self):
+        _boston = load_boston()
+        X = pd.DataFrame(_boston["data"], columns=_boston["feature_names"])
+
+        y = (_boston["target"] >= np.median(_boston["target"])).astype(int)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.3, random_state=42)
+
+        lastochka = LastochkaTransformer(verbose=True, n_final=3, n_initial=10)
+        log = LogisticRegression()
+        slog = LogisticRegression()
+
+        pipe = Pipeline(steps=[
+                ('lastochka', lastochka),
+                ('log', log)])
+
+        pipe.fit(X_train, y_train)
+        slog.fit(X_train, y_train)
+
+        pipe_probas = pipe.predict_proba(X_test)[:, 1]
+        slog_probas = slog.predict_proba(X_test)[:, 1]
+
+        pipe_auc = roc_auc_score(y_test, pipe_probas)
+        slog_auc = roc_auc_score(y_test, slog_probas)
+        print("Pipe AUC: %0.5f, Log AUC: %0.5f" % (pipe_auc, slog_auc))
+        self.assertGreater(pipe_auc, slog_auc)
 
 
 if __name__ == "__main__":
