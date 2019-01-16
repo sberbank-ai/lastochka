@@ -83,6 +83,7 @@ class BaseTest(unittest.TestCase):
         X, y = make_classification(n_samples=N_SAMPLES, n_features=5, n_informative=2, random_state=42)
         column_names = ['X%i' % i for i in range(5)]
         X_df = pd.DataFrame(X, columns=column_names)
+        X_df["CAT"] = np.random.choice(list("ABCDF"), N_SAMPLES)
 
         lastochka = LastochkaTransformer(verbose=False, n_final=3, n_initial=10)
 
@@ -94,7 +95,7 @@ class BaseTest(unittest.TestCase):
         vt = VectorTransformer(n_initial=10, n_final=5,
                                optimizer="full-search", name="X1", verbose=False,
                                total_non_events=len(y) - y.sum(),
-                               total_events=y.sum(), specials={})
+                               total_events=y.sum(), specials=[])
         with self.assertWarns(UserWarning):
             vt.fit(X, y)
 

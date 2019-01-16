@@ -97,10 +97,6 @@ class CategoryOptimizer(BaseEstimator, TransformerMixin):
         self.gini = None
         self.bin_stats = None
 
-    def _print(self, msg: str):
-        if self.verbose:
-            print(msg)
-
     def fit(self, X, y):
         bin_stats = calculate_overall_stats(X, y,
                                             total_events=self.total_events,
