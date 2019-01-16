@@ -26,10 +26,6 @@ class FullSearchOptimizer(BaseEstimator, TransformerMixin):
         self.gini = None
         self.bin_stats = None
 
-    def _print(self, msg: str):
-        if self.verbose:
-            print(msg)
-
     def fit(self, X, y):
         _, initial_edges = pd.qcut(X, self.n_initial, duplicates="drop", retbins=True)
 
@@ -62,7 +58,6 @@ class FullSearchOptimizer(BaseEstimator, TransformerMixin):
             self.gini = None
         else:
             self.edges, self.gini = sorted(mono_variants, key=lambda x: x[1])[-1]
-            self._print("Best variant gini: %0.5f" % self.gini)
 
         X_b = np.digitize(X, self.edges)
         self.bin_stats = calculate_overall_stats(X_b, y,
