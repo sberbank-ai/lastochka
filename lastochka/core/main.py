@@ -18,7 +18,7 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
                  n_initial: int,
                  n_final: int,
                  optimizer: str,
-                 specials: Dict,
+                 specials: List,
                  verbose: bool,
                  name: str,
                  total_non_events: int,
@@ -43,6 +43,7 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         self.optimizer_class = None
         self.optimizer_instance = None
         self.missing_stats = None
+        self.missing_woe_value = None
         self.specials_stats = {}
 
     def _print(self, msg: str):
@@ -56,12 +57,14 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         :param y:
         :return:
         """
-        missing_mask = ~np.isfinite(X)
+        missing_mask = pd.isnull(X)
 
         if missing_mask.sum() > 0:
             self.missing_stats = calculate_stats(y[missing_mask],
                                                  total_events=self.total_events,
                                                  total_non_events=self.total_non_events)
+            self.missing_woe_value = self.missing_stats[-1]
+
         X = X[~missing_mask]
         y = y[~missing_mask]
 
@@ -117,15 +120,23 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
                                                        total_events=self.total_events,
                                                        total_non_events=self.total_non_events,
                                                        verbose=self.verbose).fit(X, y)
+        if not self.missing_woe_value:
+            self.missing_woe_value = self.optimizer_instance.bin_stats["woe_value"].max()
 
-    def transform(self, X: np.ndarray, y: np.ndarray = None):
-        """
+        return self
 
-        :param X:
-        :param y:
-        :return:
-        """
-        return self.optimizer_instance.transform(X)
+    def transform(self, X: np.ndarray, y: np.ndarray = None) -> np.ndarray:
+        X_w = np.zeros(shape=X.shape)
+
+        for idx, x in enumerate(X):
+            if pd.isnull(x):
+                X_w[idx] = self.missing_woe_value
+            elif x in self.specials:
+                X_w[idx] = self.specials_stats.get(x)[-1]
+            else:
+                X_w[idx] = self.optimizer_instance.transform(np.array([x]))
+
+        return X_w
 
 
 class LastochkaTransformer(BaseEstimator, TransformerMixin):
@@ -175,8 +186,10 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
         self.total_events = y.sum()
         self.total_non_events = len(y) - self.total_events
 
-        for index, vector in enumerate(np.nditer(X, flags=['external_loop'], order='F')):
-            vector_specials = self.specials.get(self.feature_names[index], {})
+        for index in range(X.shape[-1]):
+            vector = X[:, index]
+
+            vector_specials = self.specials.get(self.feature_names[index], [])
 
             vector_transformer = VectorTransformer(self.n_initial,
                                                    self.n_final,
@@ -222,7 +235,13 @@ class LastochkaTransformer(BaseEstimator, TransformerMixin):
 
         X_w = np.zeros(X.shape)
 
-        for index, vector in enumerate(np.nditer(X, flags=['external_loop'], order='F')):
+        if isinstance(X, pd.DataFrame):
+            _X_proc = X.values
+        else:
+            _X_proc = X
+
+        for index in range(_X_proc.shape[-1]):
+            vector = _X_proc[:, index]
             X_w[:, index] = self.transformers[self.feature_names[index]].transform(vector)
 
         if isinstance(X, pd.DataFrame):

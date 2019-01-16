@@ -12,7 +12,7 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_boston
 from sklearn.metrics import roc_auc_score
-
+from lastochka.core.optimizer import CategoryOptimizer
 
 class BaseTest(unittest.TestCase):
     """
@@ -144,6 +144,18 @@ class BaseTest(unittest.TestCase):
         slog_auc = roc_auc_score(y_test, slog_probas)
         print("Pipe AUC: %0.5f, Log AUC: %0.5f" % (pipe_auc, slog_auc))
         self.assertGreater(pipe_auc, slog_auc)
+
+    def testCategory(self):
+        _boston = load_boston()
+        X = pd.DataFrame(_boston["data"], columns=_boston["feature_names"])
+        X["RAD_CAT"] = X["RAD"].astype(str)
+        X = X.drop("RAD", axis=1)
+        y = (_boston["target"] >= np.median(_boston["target"])).astype(int)
+        lastochka = LastochkaTransformer(verbose=True, n_final=3, n_initial=10)
+        lastochka.fit(X, y)
+        lastochka.transform(X)
+        optimizer_instance = lastochka.get_transformer("RAD_CAT").optimizer_instance
+        self.assertIsInstance(optimizer_instance, CategoryOptimizer)
 
 
 if __name__ == "__main__":
