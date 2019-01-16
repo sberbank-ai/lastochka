@@ -157,6 +157,28 @@ class BaseTest(unittest.TestCase):
         optimizer_instance = lastochka.get_transformer("RAD_CAT").optimizer_instance
         self.assertIsInstance(optimizer_instance, CategoryOptimizer)
 
+    def testMissing(self):
+        _boston = load_boston()
+        X = pd.DataFrame(_boston["data"], columns=_boston["feature_names"])
+        np.random.seed(2)
+        indexes = np.random.choice(X.index.tolist(), 200)
+        X.loc[indexes, "ZN"] = np.nan
+        y = (_boston["target"] >= np.median(_boston["target"])).astype(int)
+        lastochka = LastochkaTransformer(verbose=True, n_final=3, n_initial=10)
+        lastochka.fit(X, y)
+        lastochka.transform(X)
+        self.assertTrue(lastochka.get_transformer("ZN").missing_woe_value is not None)
+
+    def testSpecial(self):
+        _boston = load_boston()
+        X = pd.DataFrame(_boston["data"], columns=_boston["feature_names"])
+        y = (_boston["target"] >= np.median(_boston["target"])).astype(int)
+        specs = {"PTRATIO": [20.2, 14.7]}
+        lastochka = LastochkaTransformer(verbose=True, n_final=3, n_initial=10, specials=specs)
+        lastochka.fit(X, y)
+        lastochka.transform(X)
+        self.assertTrue(list(lastochka.get_transformer("PTRATIO").specials_stats.keys()) == specs["PTRATIO"])
+
 
 if __name__ == "__main__":
     unittest.main()
