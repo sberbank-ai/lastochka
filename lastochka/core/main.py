@@ -40,6 +40,7 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         self.total_non_events = total_non_events
         self.total_events = total_events
 
+        self.feature_type = None
         self.optimizer_class = None
         self.optimizer_instance = None
         self.missing_stats = None
@@ -101,18 +102,27 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         self._print("Input dataset after missing        : %i" % len(X))
 
         if X.dtype != np.dtype("O"):
+
             if np.unique(X).shape[0] <= (len(X) / self.n_initial):
-                self.optimizer_class = OPTIMIZERS.get("category")
                 warn("Too low amount of unique values (%i in %i) - category optimizer will be used" %
                      (np.unique(X).shape[0], len(X)))
-            else:
-                self.optimizer_class = OPTIMIZERS.get(self.optimizer)
+                self.feature_type = "category"
+
+            self.feature_type = "numeric"
+        else:
+            self.feature_type = "category"
+
+        if self.feature_type == "numeric":
+            self.optimizer_class = OPTIMIZERS.get(self.optimizer)
         else:
             self.optimizer_class = OPTIMIZERS.get("category")
 
         if not self.optimizer_class:
             raise NotImplementedError("Optimizer %s is not yet implemented, allowed optimizers are: %s" %
                                       (self.optimizer, ', '.join(OPTIMIZERS.keys())))
+
+        if self.feature_type == "category":
+            X = X.astype(str)
 
         self.optimizer_instance = self.optimizer_class(self.name,
                                                        self.n_initial,
@@ -126,6 +136,10 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: np.ndarray, y: np.ndarray = None) -> np.ndarray:
+
+        if self.feature_type == "category":
+            X = X.astype(str)
+
         X_w = np.zeros(shape=X.shape)
         miss_indexes = np.argwhere(pd.isnull(X))
         X_w[miss_indexes] = self.missing_woe_value

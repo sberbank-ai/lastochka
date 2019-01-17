@@ -93,14 +93,14 @@ class CategoryOptimizer(BaseEstimator, TransformerMixin):
         self.bin_stats = None
 
     def fit(self, X: np.ndarray, y: np.ndarray):
-        bin_stats = calculate_overall_stats(X.astype(np.object), y,
+        bin_stats = calculate_overall_stats(X, y,
                                             total_events=self.total_events,
                                             total_non_events=self.total_non_events)
         self.bin_stats = bin_stats
         return self
 
     def transform(self, X: np.ndarray, y: np.ndarray = None) -> np.ndarray:
-        X_b = pd.DataFrame(X.astype(np.object), columns=["bin_id"])
+        X_b = pd.DataFrame(X, columns=["bin_id"])
         X_w = pd.merge(X_b, self.bin_stats[["woe_value"]],
                        how="left", left_on="bin_id", right_index=True)["woe_value"]
         X_w = X_w.fillna(self.bin_stats["woe_value"].max())
