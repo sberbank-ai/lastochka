@@ -14,6 +14,7 @@ from sklearn.datasets import load_boston
 from sklearn.metrics import roc_auc_score
 from lastochka.core.optimizer import CategoryOptimizer
 
+
 class BaseTest(unittest.TestCase):
     """
     Basic functionality tests
@@ -51,7 +52,7 @@ class BaseTest(unittest.TestCase):
     def testNonExistentEstimator(self):
         vt = VectorTransformer(optimizer="fake_optimizer",
                                n_final=2, n_initial=10,
-                               specials={}, verbose=False, name="test",
+                               specials=[], verbose=False, name="test",
                                total_non_events=1, total_events=1)
 
         self.assertRaises(NotImplementedError, vt.fit,

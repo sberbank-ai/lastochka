@@ -127,14 +127,18 @@ class VectorTransformer(BaseEstimator, TransformerMixin):
 
     def transform(self, X: np.ndarray, y: np.ndarray = None) -> np.ndarray:
         X_w = np.zeros(shape=X.shape)
+        miss_indexes = np.argwhere(pd.isnull(X))
+        X_w[miss_indexes] = self.missing_woe_value
+        filter_indexes = miss_indexes
 
-        for idx, x in enumerate(X):
-            if pd.isnull(x):
-                X_w[idx] = self.missing_woe_value
-            elif x in self.specials:
-                X_w[idx] = self.specials_stats.get(x)[-1]
-            else:
-                X_w[idx] = self.optimizer_instance.transform(np.array([x]))
+        for spec in self.specials:
+            spec_indexes = np.argwhere(X == spec)
+            X_w[spec_indexes] = self.specials_stats.get(spec)[-1]
+            filter_indexes = np.append(filter_indexes, spec_indexes)
+
+        transform_indexes = [idx for idx in range(len(X)) if idx not in filter_indexes]
+
+        X_w[transform_indexes] = self.optimizer_instance.transform(X[transform_indexes])
 
         return X_w
 
