@@ -2,14 +2,14 @@ from setuptools import setup, find_packages
 from lastochka import __version__
 
 DISTNAME = 'lastochka'
-DESCRIPTION = 'Weight Of Evidence Transformer with scikit-learn API'
+DESCRIPTION = 'Lastochka - Weight Of Evidence Transformer with scikit-learn compatible API'
 
 with open('README.rst') as f:
     LONG_DESCRIPTION = f.read()
 
 MAINTAINER = 'Ivan Trusov'
 MAINTAINER_EMAIL = 'polarpersonal@gmail.com'
-URL = 'http://scikit-learn.org'
+URL = 'https://github.com/sberbank-ai/lastochka'
 DOWNLOAD_URL = 'https://pypi.org/project/lastochka/#files'
 LICENSE = 'MIT'
 
@@ -30,13 +30,14 @@ CLASSIFIERS = [
 ]
 
 setup(
-    name="lastochka",
+    name=DISTNAME,
     version=__version__,
-    description="Lastochka - Weight Of Evidence Transformer",
+    description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     author=MAINTAINER,
-    url='https://github.com/sberbank-ai/lastochka',
+    url=URL,
     license=LICENSE,
+    classifiers=CLASSIFIERS,
     packages=find_packages(exclude=('tests',)),
     include_package_data=True,
     install_requires=["numpy", "pandas", "scikit-learn", "tqdm"],
