@@ -181,6 +181,9 @@ class BaseTest(unittest.TestCase):
         lastochka.transform(X)
         self.assertTrue(list(lastochka.get_transformer("PTRATIO").specials_stats.keys()) == specs["PTRATIO"])
 
+    def testReadMe(self):
+        pass
+
 
 if __name__ == "__main__":
     unittest.main()

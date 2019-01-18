@@ -1,19 +1,3 @@
-# Lastochka
-[![Build Status](https://travis-ci.org/sberbank-ai/lastochka.svg?branch=master)](https://travis-ci.org/sberbank-ai/lastochka)
-[![codecov](https://codecov.io/gh/sberbank-ai/lastochka/branch/master/graph/badge.svg)](https://codecov.io/gh/sberbank-ai/lastochka)
-[![PyPI version](https://badge.fury.io/py/lastochka.svg)](https://badge.fury.io/py/lastochka)
-
-Weight of Evidence transformation, implemented in Python. 
-
-# Quickstart
-
-1. Install the package:
-```bash
-pip install lastochka
-```
-
-2. Use module as scikit-learn transformer:
-```python
 import pandas as pd
 from lastochka import LastochkaTransformer
 from sklearn.linear_model import LogisticRegression
@@ -40,6 +24,3 @@ pipe = Pipeline(steps=[
 pipe.fit(D_train, y_train)
 
 test_proba = pipe.predict_proba(D_test)
-```
-
-
