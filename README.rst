@@ -24,7 +24,8 @@ Quickstart
 
 2. Use module as scikit-learn transformer:
 
-.. literalinclude:: ./tests/test_readme.py
+.. include:: tests/test_readme.py
+    :code: python
 
 
 
