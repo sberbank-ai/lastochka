@@ -4,7 +4,7 @@ python:
 before_install:
 - pip install -U pip
 - pip install -r requirements.txt
-- pip install -U pytest pytest-cov docutils
+- pip install -U pytest pytest-cov docutils pygments
 install:
 - pip install -e .
 script:
